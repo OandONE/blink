@@ -35,7 +35,7 @@ cat > ~/.config/autostart/blink.desktop << 'EOF'
 Type=Application
 Name=Blink
 Comment=Eye care reminder
-Exec=python3 /home/YOUR_USERNAME/blink/blink.py
+Exec=python3 /home/YOUR_USERNAME/blink/blink/blink.py
 StartupNotify=false
 Terminal=false
 X-GNOME-Autostart-enabled=true
