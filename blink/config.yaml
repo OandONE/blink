@@ -1,0 +1,5 @@
+blink_interval: 30        # seconds between blink reminders
+look_away_interval: 1200  # seconds between 20-20-20 reminders (20 min)
+look_away_duration: 20    # how long to look away
+rest_duration: 20         # how long to close your eyes
+enabled: true
