@@ -9,12 +9,21 @@ from gi.repository import Gtk, GLib, Notify
 from gi.repository import AppIndicator3 as AppIndicator
 
 from .config import load_config, save_config
+from .scheduler import Event, Scheduler
 
 
 class Blink:
     def __init__(self):
         self.config = load_config()
         Notify.init("Blink")
+
+        self.scheduler = Scheduler(
+            blink_interval=self.config["blink_interval"],
+            look_away_interval=self.config["look_away_interval"],
+            look_away_duration=self.config["look_away_duration"],
+            rest_duration=self.config["rest_duration"],
+            enabled=self.config["enabled"],
+        )
 
         self.indicator = AppIndicator.Indicator.new(
             "blink-indicator",
@@ -32,7 +41,7 @@ class Blink:
         self.menu.append(Gtk.SeparatorMenuItem())
 
         self.toggle_item = Gtk.MenuItem(
-            label="⏸ Pause" if self.config["enabled"] else "▶ Resume"
+            label="⏸ Pause" if self.scheduler.enabled else "▶ Resume"
         )
         self.toggle_item.connect("activate", self.toggle)
         self.menu.append(self.toggle_item)
@@ -46,64 +55,46 @@ class Blink:
         self.menu.show_all()
         self.indicator.set_menu(self.menu)
 
-        self.blink_counter = 0
-        self.look_counter = 0
-        self.rest_counter = 0
+        # Timer runs unconditionally; the scheduler decides when to emit
+        GLib.timeout_add(1000, self._tick)
 
-        if self.config["enabled"]:
-            GLib.timeout_add(1000, self._tick)
+    def _tick(self) -> bool:
+        for event in self.scheduler.tick():
+            self._handle_event(event)
+        return True
 
-    def _tick(self):
-        if not self.config["enabled"]:
-            return True
-
-        self.blink_counter += 1
-        self.look_counter += 1
-        self.rest_counter += 1
-
-        if self.blink_counter >= self.config["blink_interval"]:
-            self.blink_counter = 0
+    def _handle_event(self, event: Event) -> None:
+        if event is Event.BLINK:
             self._notify("👁 Blink!", "Remember to blink your eyes.")
-
-        if self.look_counter >= self.config["look_away_interval"]:
-            self.look_counter = 0
-            self.rest_counter = 0
+        elif event is Event.LOOK_AWAY:
             self._notify(
                 "👀 20-20-20 Rule",
                 f"Look at something 20 feet away "
-                f"for {self.config['look_away_duration']} seconds.",
+                f"for {self.scheduler.look_away_duration} seconds.",
             )
-
-        if (
-            self.rest_counter >= self.config["look_away_duration"]
-            and self.rest_counter == self.config["look_away_duration"]
-        ):
+        elif event is Event.REST:
             self._notify(
                 "😌 Rest Your Eyes",
-                f"Close your eyes for {self.config['rest_duration']} seconds.",
+                f"Close your eyes for {self.scheduler.rest_duration} seconds.",
             )
 
-        return True
-
-    def _notify(self, title, message):
+    def _notify(self, title: str, message: str) -> None:
         notification = Notify.Notification.new(title, message, "dialog-information")
         notification.set_timeout(5000)
         notification.show()
 
-    def toggle(self, widget):
-        self.config["enabled"] = not self.config["enabled"]
-        save_config(self.config)
-
-        if self.config["enabled"]:
-            self.toggle_item.set_label("⏸ Pause")
-            self.blink_counter = 0
-            self.look_counter = 0
-            self.rest_counter = 0
-        else:
+    def toggle(self, widget) -> None:
+        if self.scheduler.enabled:
+            self.scheduler.pause()
             self.toggle_item.set_label("▶ Resume")
-
-    def quit(self, widget):
-        self.config["enabled"] = False
+        else:
+            self.scheduler.resume()
+            self.toggle_item.set_label("⏸ Pause")
+        self.config["enabled"] = self.scheduler.enabled
         save_config(self.config)
+
+    def quit(self, widget) -> None:
+        # Do NOT touch `enabled` here — the user's pause preference is
+        # persisted by `toggle` and should survive restarts
         Notify.uninit()
         Gtk.main_quit()
