@@ -19,9 +19,9 @@ A lightweight system tray app that reminds you to blink, look away, and rest you
 ## 📦 Installation
 
 ```bash
-sudo apt install python3-gi python3-yaml gir1.2-notify-0.7 -y
-git clone https://github.com/OandONE/blink.git && cd blink/blink
-python3 blink.py
+sudo apt install python3-gi gir1.2-appindicator3-0.1 gir1.2-notify-0.7 -y
+git clone https://github.com/OandONE/blink.git && cd blink
+python3 -m blink
 ```
 
 ---
@@ -35,7 +35,7 @@ cat > ~/.config/autostart/blink.desktop << 'EOF'
 Type=Application
 Name=Blink
 Comment=Eye care reminder
-Exec=python3 /home/YOUR_USERNAME/blink/blink/blink.py
+Exec=sh -c "cd /home/YOUR_USERNAME/blink && python3 -m blink"
 StartupNotify=false
 Terminal=false
 X-GNOME-Autostart-enabled=true
@@ -48,14 +48,16 @@ EOF
 
 ## 🎨 Configuration
 
-Edit `~/.config/blink/config.yaml`:
+Edit `~/.config/blink/config.json`:
 
-```yaml
-blink_interval: 30        # seconds between blink reminders
-look_away_interval: 1200  # seconds between 20-20-20 reminders (20 min)
-look_away_duration: 20    # how long to look away
-rest_duration: 20         # how long to close your eyes
-enabled: true
+```json
+{
+  "blink_interval": 30,
+  "look_away_interval": 1200,
+  "look_away_duration": 20,
+  "rest_duration": 20,
+  "enabled": true
+}
 ```
 
 ---
