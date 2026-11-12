@@ -13,6 +13,7 @@ A lightweight system tray app that reminds you to blink, look away, and rest you
 | 😌 **Eye Rest** | Close your eyes and rest after looking away |
 | ⏸ **Pause/Resume** | Toggle reminders from the system tray menu |
 | 🐧 **Native Linux** | Built with GTK3 and AppIndicator |
+| ⚙ **Settings Window** | Edit all intervals from the tray menu |
 
 ---
 
@@ -89,6 +90,13 @@ affects the current session — the `enabled` flag in `config.json` stays
 untouched.
 
 ---
+
+### ⚙ Settings window
+
+Right-click the tray icon → **Settings…** to edit intervals from a GTK
+window. Changes are saved to `config.json` and applied immediately — no
+restart needed. The window uses plain GTK3 widgets and works on any Linux
+desktop (GNOME, KDE, XFCE, MATE, Cinnamon, Budgie, ...).
 
 ## 🚧 Roadmap
 
