@@ -18,11 +18,27 @@ A lightweight system tray app that reminds you to blink, look away, and rest you
 
 ## 📦 Installation
 
+Blink depends on system-level libraries (GTK3, libnotify), so the recommended
+way to run it is against your system Python — not inside a plain venv.
+
 ```bash
-sudo apt install python3-gi gir1.2-appindicator3-0.1 gir1.2-notify-0.7 -y
+# Required
+sudo apt install python3-gi gir1.2-notify-0.7 -y
+# Recommended (better tray integration on most desktops)
+sudo apt install gir1.2-appindicator3-0.1 -y
+
 git clone https://github.com/OandONE/blink.git && cd blink
 python3 -m blink
 ```
+
+> **Using a virtualenv?** Create it with `--system-site-packages` so PyGObject
+> (which is installed via the system package manager) is visible:
+>
+> ```bash
+> python3 -m venv --system-site-packages venv
+> source venv/bin/activate
+> python3 -m blink
+> ```
 
 ---
 
