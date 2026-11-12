@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Blink
+GenericName=Eye Care Reminder
+Comment=Reminds you to blink, look away, and rest your eyes
+Exec=blink
+Icon=blink
+Terminal=false
+Categories=Utility;GTK;
+Keywords=eye;blink;rest;20-20-20;health;
+StartupNotify=false

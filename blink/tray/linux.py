@@ -22,6 +22,14 @@ _HAS_APPINDICATOR = _APPINDICATOR is not None
 
 from .base import Tray
 
+from pathlib import Path
+
+# Prefer the local asset so dev-mode testing works without installing
+# After `install.sh` places icons in the hicolor theme, `_ICON` will
+# either point to /opt/blink/blink/assets/icon.png (still valid) or fall
+# back to the theme name "blink" if assets aren't shipped
+_LOCAL_ICON = Path(__file__).resolve().parent.parent / "assets" / "icon.png"
+_ICON = str(_LOCAL_ICON) if _LOCAL_ICON.exists() else "blink"
 
 class GtkTray(Tray):
     def __init__(self):
@@ -77,15 +85,16 @@ class GtkTray(Tray):
         if _HAS_APPINDICATOR:
             self._indicator = _APPINDICATOR.Indicator.new(
                 "blink-indicator",
-                "dialog-information",
+                _ICON,
                 _APPINDICATOR.IndicatorCategory.APPLICATION_STATUS,
             )
             self._indicator.set_status(_APPINDICATOR.IndicatorStatus.ACTIVE)
             self._indicator.set_menu(self._menu)
         else:
-            self._status_icon = Gtk.StatusIcon.new_from_icon_name(
-                "dialog-information"
-            )
+            if _LOCAL_ICON.exists():
+                self._status_icon = Gtk.StatusIcon.new_from_file(str(_LOCAL_ICON))
+            else:
+                self._status_icon = Gtk.StatusIcon.new_from_icon_name(_ICON)
             self._status_icon.set_tooltip_text("Blink - eye care reminder")
             self._status_icon.connect("popup-menu", self._on_popup)
             self._status_icon.connect("activate", lambda _i: self._on_toggle())

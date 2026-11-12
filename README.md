@@ -1,5 +1,7 @@
 # 👁️ Blink — Eye care reminder for developers who forget to blink.
 
+![logo](assets/icon.svg)
+
 A lightweight system tray app that reminds you to blink, look away, and rest your eyes.
 
 ---

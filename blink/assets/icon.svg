@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Background circle -->
+  <circle cx="32" cy="32" r="30" fill="#2b7a78"/>
+
+  <!-- Eye outline (almond shape) -->
+  <path d="M 10 32
+           Q 32 14 54 32
+           Q 32 50 10 32 Z"
+        fill="#f5f5f5"/>
+
+  <!-- Iris -->
+  <circle cx="32" cy="32" r="9" fill="#2b7a78"/>
+  <!-- Pupil -->
+  <circle cx="32" cy="32" r="4" fill="#0f1a1a"/>
+  <!-- Highlight -->
+  <circle cx="35" cy="29" r="2" fill="#ffffff" opacity="0.9"/>
+
+  <!-- Eyelid (top arc, partially closed) -->
+  <path d="M 10 32 Q 32 18 54 32"
+        fill="none" stroke="#2b7a78" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- Lash lines (subtle) -->
+  <line x1="16" y1="27" x2="14" y2="22" stroke="#2b7a78" stroke-width="1.6" stroke-linecap="round"/>
+  <line x1="24" y1="23" x2="23" y2="18" stroke="#2b7a78" stroke-width="1.6" stroke-linecap="round"/>
+  <line x1="32" y1="22" x2="32" y2="17" stroke="#2b7a78" stroke-width="1.6" stroke-linecap="round"/>
+  <line x1="40" y1="23" x2="41" y2="18" stroke="#2b7a78" stroke-width="1.6" stroke-linecap="round"/>
+  <line x1="48" y1="27" x2="50" y2="22" stroke="#2b7a78" stroke-width="1.6" stroke-linecap="round"/>
+</svg>

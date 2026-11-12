@@ -1,16 +1,15 @@
 """Configuration loading and persistence for Blink
 
-Settings live in ``config.json`` at the project root so users can edit them
-directly. The file is created with defaults on first run and merged with
-defaults on load, so partial or outdated configs still work
+A read-only default config ships with the code (``config.json`` next to the
+package). User overrides — including changes saved from the Settings window -
+go to the standard XDG location (``~/.config/blink/config.json``) so Blink
+works when installed to ``/opt/blink`` without needing root to save settings
 """
 
 import json
+import os
 from pathlib import Path
 
-
-# config.json lives at the project root, one level above the package
-CONFIG_PATH = Path(__file__).resolve().parent.parent / "config.json"
 
 DEFAULT_CONFIG = {
     "blink_interval": 30,
@@ -21,24 +20,35 @@ DEFAULT_CONFIG = {
 }
 
 
+def _user_config_path() -> Path:
+    xdg = os.environ.get("XDG_CONFIG_HOME") or str(Path.home() / ".config")
+    return Path(xdg) / "blink" / "config.json"
+
+
+def _shipped_config_path() -> Path:
+    # config.json sits next to the package: project root in dev,
+    # /opt/blink/ after install
+    return Path(__file__).resolve().parent.parent / "config.json"
+
+
 def load_config() -> dict:
-    """Load config from disk, merged with defaults"""
-    if not CONFIG_PATH.exists():
-        save_config(DEFAULT_CONFIG)
-        return DEFAULT_CONFIG.copy()
-
-    with CONFIG_PATH.open("r", encoding="utf-8") as f:
-        data = json.load(f)
-
-    merged = DEFAULT_CONFIG.copy()
-    merged.update(data)
-    return merged
+    """Load user config if present, else shipped default, else built-ins."""
+    for path in (_user_config_path(), _shipped_config_path()):
+        if path.exists():
+            with path.open("r", encoding="utf-8") as f:
+                data = json.load(f)
+            merged = DEFAULT_CONFIG.copy()
+            merged.update(data)
+            return merged
+    return DEFAULT_CONFIG.copy()
 
 
 def save_config(config: dict) -> None:
-    """Write config atomically (write to temp, then rename)"""
-    tmp = CONFIG_PATH.with_suffix(".json.tmp")
+    """Write user overrides to XDG config home (never to /opt)."""
+    path = _user_config_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(".json.tmp")
     with tmp.open("w", encoding="utf-8") as f:
         json.dump(config, f, indent=2)
         f.write("\n")
-    tmp.replace(CONFIG_PATH)
+    tmp.replace(path)
