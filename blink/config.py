@@ -1,20 +1,16 @@
-"""Configuration loading and persistence for Blink"""
+"""Configuration loading and persistence for Blink
+
+Settings live in ``config.json`` at the project root so users can edit them
+directly. The file is created with defaults on first run and merged with
+defaults on load, so partial or outdated configs still work
+"""
 
 import json
-import os
 from pathlib import Path
 
 
-def _config_dir() -> Path:
-    """Respect XDG_CONFIG_HOME when set"""
-    xdg = os.environ.get("XDG_CONFIG_HOME")
-    if xdg:
-        return Path(xdg) / "blink"
-    return Path.home() / ".config" / "blink"
-
-
-CONFIG_DIR = _config_dir()
-CONFIG_PATH = CONFIG_DIR / "config.json"
+# config.json lives at the project root, one level above the package
+CONFIG_PATH = Path(__file__).resolve().parent.parent / "config.json"
 
 DEFAULT_CONFIG = {
     "blink_interval": 30,
@@ -26,12 +22,7 @@ DEFAULT_CONFIG = {
 
 
 def load_config() -> dict:
-    """Load config from disk, merged with defaults
-
-    Creates a default config file on first run. Unknown or missing keys
-    fall back to defaults, so partial configs are safe to load
-    """
-    CONFIG_DIR.mkdir(parents=True, exist_ok=True)
+    """Load config from disk, merged with defaults"""
     if not CONFIG_PATH.exists():
         save_config(DEFAULT_CONFIG)
         return DEFAULT_CONFIG.copy()
@@ -46,8 +37,8 @@ def load_config() -> dict:
 
 def save_config(config: dict) -> None:
     """Write config atomically (write to temp, then rename)"""
-    CONFIG_DIR.mkdir(parents=True, exist_ok=True)
     tmp = CONFIG_PATH.with_suffix(".json.tmp")
     with tmp.open("w", encoding="utf-8") as f:
         json.dump(config, f, indent=2)
+        f.write("\n")
     tmp.replace(CONFIG_PATH)

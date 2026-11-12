@@ -1,0 +1,7 @@
+{
+  "blink_interval": 30,
+  "look_away_interval": 1200,
+  "look_away_duration": 20,
+  "rest_duration": 20,
+  "enabled": true
+}

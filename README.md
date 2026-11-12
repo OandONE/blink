@@ -64,7 +64,7 @@ EOF
 
 ## 🎨 Configuration
 
-Edit `~/.config/blink/config.json`:
+Edit `config.json` at the project root:
 
 ```json
 {
@@ -75,6 +75,18 @@ Edit `~/.config/blink/config.json`:
   "enabled": true
 }
 ```
+
+| Key | Description |
+|-----|-------------|
+| `blink_interval` | Seconds between blink reminders |
+| `look_away_interval` | Seconds between 20-20-20 reminders (default 20 min) |
+| `look_away_duration` | How long to look away (seconds) |
+| `rest_duration` | How long to close your eyes (seconds) |
+| `enabled` | Start the app enabled (toggle is per-session) |
+
+Changes take effect on the next launch. Pause/Resume from the tray only
+affects the current session — the `enabled` flag in `config.json` stays
+untouched.
 
 ---
 

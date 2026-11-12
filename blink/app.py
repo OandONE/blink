@@ -60,8 +60,6 @@ class Blink:
         else:
             self.scheduler.resume()
             self.tray.set_toggle_label("⏸ Pause")
-        self.config["enabled"] = self.scheduler.enabled
-        save_config(self.config)
 
     def _on_quit(self) -> None:
         self.notifier.close()
